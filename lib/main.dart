@@ -1,28 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:learn_riverpod/birthdays_provider.dart';
-import 'package:learn_riverpod/repository.dart';
+import 'package:learn_riverpod/routing/app_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import 'env/env.dart';
 part 'main.g.dart';
 
 @riverpod
 String label(LabelRef ref) => 'Hello world';
 
 void main() {
+    print('Key----> ${Env.tmdbApiKey}');
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final goRouter = ref.watch(goRouterProvider);
+    return MaterialApp.router(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark(),
+      routerConfig: goRouter,
     );
   }
 }
@@ -40,31 +42,12 @@ class MyHomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final birthdays = ref.watch(birthdaysProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text('Test'),
       ),
-      body: birthdays.when(
-        data: (data) {
-          return ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (context, index) {
-              final birthday = data.elementAt(index);
-              return ListTile(
-                title: Text(birthday.employeeName ?? ''),
-              );
-            },
-          );
-        },
-        error: (error, stackTrace) {
-          return Center(
-            child: Text('$error'),
-          );
-        },
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
+      body: Center(
+        child: Text('Simple App'),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: ref.read(counterProvider.notifier).increment,
